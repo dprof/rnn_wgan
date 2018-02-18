@@ -38,7 +38,7 @@ def run(iterations, seq_length, is_first, charmap, inv_charmap, prev_seq_length)
     with tf.Session() as session:
 
         session.run(tf.initialize_all_variables())
-        if not is_first and seq_length != 1:
+        if not is_first:
             print("Loading previous checkpoint...")
             internal_checkpoint_dir = model_and_data_serialization.get_internal_checkpoint_dir(prev_seq_length)
             model_and_data_serialization.optimistic_restore(session,

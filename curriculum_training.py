@@ -6,6 +6,8 @@ from summaries import log_run_settings
 create_logs_dir()
 log_run_settings()
 
+#Charmap - dictionary uppercase, lower case and symbols characters and occurrence
+#Inv charmap - list of all chars
 _, charmap, inv_charmap = model_and_data_serialization.load_dataset(seq_length=32, b_lines=False)
 
 REAL_BATCH_SIZE = FLAGS.BATCH_SIZE
@@ -18,9 +20,10 @@ else:
 
 print('@@@@@@@@@@@ Stages : ' + ' '.join(map(str, stages)))
 
+print('stages=', stages)
+bomb
 for i in range(len(stages)):
-    #prev_seq_length = stages[i-1] if i>0 else 0
-    prev_seq_length = stages[i] -1
+    prev_seq_length = stages[i-1] if i>0 else 0
     seq_length = stages[i]
     print(
     "**********************************Training on Seq Len = %d, BATCH SIZE: %d**********************************" % (

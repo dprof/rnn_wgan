@@ -1,7 +1,7 @@
 import numpy as np
 import model_and_data_serialization
 from model import *
-from tensorflow.python.training.saver import latest_checkpoint
+
 output_path = './output/sample.txt'
 
 '''
@@ -23,8 +23,7 @@ disc_fake = Discriminator(inference_op, charmap_len, SEQ_LEN, reuse=False)
 saver = tf.train.Saver()
 
 with tf.Session() as session:
-    #saver.restore(session, CKPT_PATH)
-    model_and_data_serialization.optimistic_restore(session, latest_checkpoint(CKPT_PATH, "checkpoint"))
+    saver.restore(session, CKPT_PATH)
     sequential_output, scores = session.run([inference_op, disc_fake])
 
 samples = []
