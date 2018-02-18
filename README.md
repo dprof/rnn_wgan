@@ -1,4 +1,4 @@
-Enhancements to RNn WGAN for cs224n
+Enhancements to RNN WGAN for cs224n
 
 
 
