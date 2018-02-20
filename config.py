@@ -9,14 +9,14 @@ flags = tf.app.flags
 
 
 flags.DEFINE_string('LOGS_DIR', './logs/', '')
-#flags.DEFINE_string('DATA_DIR', './data/1-billion-word-language-modeling-benchmark-r13output/', "")
-flags.DEFINE_string('DATA_DIR', './data/small_benchmark/', "")
+flags.DEFINE_string('DATA_DIR', './data/1-billion-word-language-modeling-benchmark-r13output/', "")
+#flags.DEFINE_string('DATA_DIR', './data/small_benchmark/', "")
 flags.DEFINE_string('CKPT_PATH', "./ckpt/", "")
 flags.DEFINE_integer('BATCH_SIZE', 64, '')
 flags.DEFINE_integer('CRITIC_ITERS', 10, '')
 flags.DEFINE_integer('LAMBDA', 10, '')
-#flags.DEFINE_integer('MAX_N_EXAMPLES', 10000000, '')
-flags.DEFINE_integer('MAX_N_EXAMPLES', 1000, '')
+flags.DEFINE_integer('MAX_N_EXAMPLES', 10000000, '')
+#flags.DEFINE_integer('MAX_N_EXAMPLES', 1000, '')
 flags.DEFINE_string('GENERATOR_MODEL', 'Generator_GRU_CL_VL_TH', '')
 flags.DEFINE_string('DISCRIMINATOR_MODEL', 'Discriminator_GRU', '')
 flags.DEFINE_string('PICKLE_PATH', './pkl', '')
