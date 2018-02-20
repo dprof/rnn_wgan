@@ -1,5 +1,7 @@
 import tensorflow as tf
 from tensorflow.contrib.rnn import GRUCell
+from tensorflow.contrib.rnn import LSTMCell
+
 
 from config import *
 
@@ -26,31 +28,36 @@ def Discriminator_GRU(inputs, charmap_len, seq_len, reuse=False):
         for inp in inputs:
             print(inp.get_shape())
 
+        #Q: Why not a call to dynamic RNN?
         output, state = tf.contrib.rnn.static_rnn(
             cell,
             inputs,
             dtype=tf.float32
         )
+        #Output shape is (64,512)
 
         last = output[-1]
 
-        weight = tf.get_variable("W", shape=[num_neurons, 1],
+        weight2 = tf.get_variable("W", shape=[num_neurons, 1],
                                  initializer=tf.random_uniform_initializer(minval=-0.1, maxval=0.1))
         bias = tf.get_variable("b", shape=[1], initializer=tf.random_uniform_initializer(minval=-0.1, maxval=0.1))
 
-        prediction = tf.matmul(last, weight) + bias
+        prediction = tf.matmul(last, weight2) + bias
 
-        return prediction
+        return prediction # (64,1)
 
 
 def Generator_GRU_CL_VL_TH(n_samples, charmap_len, seq_len=None, gt=None):
     with tf.variable_scope("Generator"):
         noise, noise_shape = get_noise()
+        #print("noise, noise_shape", noise, noise_shape)
         num_neurons = FLAGS.GEN_STATE_SIZE
 
         cells = []
         for l in range(FLAGS.GEN_GRU_LAYERS):
+            #from tensorflow.contrib.rnn
             cells.append(GRUCell(num_neurons))
+            #cells.append(LSTMCell(num_neurons))
 
         # this is separate to decouple train and test
         train_initial_states = create_initial_states(noise)
@@ -68,12 +75,15 @@ def Generator_GRU_CL_VL_TH(n_samples, charmap_len, seq_len=None, gt=None):
             seq_len = tf.placeholder(tf.int32, None, name="ground_truth_sequence_length")
 
         if gt is not None: #if no GT, we are training
+            #print("Generator - Training")
             train_pred = get_train_op(cells, char_input, charmap_len, embedding, gt, n_samples, num_neurons, seq_len,
                                       sm_bias, sm_weight, train_initial_states)
+            #Teacher Helping happens here
             inference_op = get_inference_op(cells, char_input, embedding, seq_len, sm_bias, sm_weight, inference_initial_states,
                                             num_neurons,
                                             charmap_len, reuse=True)
         else:
+            #Inferencing
             inference_op = get_inference_op(cells, char_input, embedding, seq_len, sm_bias, sm_weight, inference_initial_states,
                                             num_neurons,
                                             charmap_len, reuse=False)
@@ -94,7 +104,9 @@ def get_train_op(cells, char_input, charmap_len, embedding, gt, n_samples, num_n
     gt_embedding = tf.reshape(gt, [n_samples * seq_len, charmap_len])
     gt_GRU_input = tf.matmul(gt_embedding, embedding)
     gt_GRU_input = tf.reshape(gt_GRU_input, [n_samples, seq_len, num_neurons])[:, :-1]
+
     gt_sentence_input = tf.concat([char_input, gt_GRU_input], axis=1)
+
     GRU_output, _ = rnn_step_prediction(cells, charmap_len, gt_sentence_input, num_neurons, seq_len, sm_bias,
                                          sm_weight,
                                          states)
@@ -108,8 +120,10 @@ def get_train_op(cells, char_input, charmap_len, embedding, gt, n_samples, num_n
     train_pred = tf.reshape(train_pred, [BATCH_SIZE*seq_len, seq_len, charmap_len])
 
     if FLAGS.LIMIT_BATCH:
+        #What's happening here???
         indices = tf.random_uniform([BATCH_SIZE], 0, BATCH_SIZE*seq_len, dtype=tf.int32)
         train_pred = tf.gather(train_pred, indices)
+
 
     return train_pred
 
@@ -118,12 +132,18 @@ def rnn_step_prediction(cells, charmap_len, gt_sentence_input, num_neurons, seq_
                         reuse=False):
     with tf.variable_scope("rnn", reuse=reuse):
         GRU_output = gt_sentence_input
+
         for l in range(FLAGS.GEN_GRU_LAYERS):
+            #Addition of LSTM needs to happen here using tf.nn.dynamic_rnn ...
+            print("l=", l)
+            print("layer_%d" % (l + 1))
             GRU_output, states[l] = tf.nn.dynamic_rnn(cells[l], GRU_output, dtype=tf.float32,
                                                        initial_state=states[l], scope="layer_%d" % (l + 1))
+
     GRU_output = tf.reshape(GRU_output, [-1, num_neurons])
     GRU_output = tf.nn.softmax(tf.matmul(GRU_output, sm_weight) + sm_bias)
     GRU_output = tf.reshape(GRU_output, [BATCH_SIZE, -1, charmap_len])
+
     return GRU_output, states
 
 
@@ -132,6 +152,7 @@ def get_inference_op(cells, char_input, embedding, seq_len, sm_bias, sm_weight, 
     inference_pred = []
     embedded_pred = [char_input]
     for i in range(seq_len):
+
         step_pred, states = rnn_step_prediction(cells, charmap_len, tf.concat(embedded_pred, 1), num_neurons, seq_len,
                                                 sm_bias, sm_weight, states, reuse=reuse)
         best_chars_tensor = tf.argmax(step_pred, axis=2)
@@ -141,7 +162,8 @@ def get_inference_op(cells, char_input, embedding, seq_len, sm_bias, sm_weight, 
         embedded_pred.append(tf.expand_dims(tf.matmul(best_char, embedding), 1))
         reuse = True  # no matter what the reuse was, after the first step we have to reuse the defined vars
 
-    return tf.concat(inference_pred, axis=1)
+    result_inf_pred = tf.concat(inference_pred, axis=1)
+    return result_inf_pred
 
 
 generators = {

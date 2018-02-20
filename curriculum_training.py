@@ -20,8 +20,6 @@ else:
 
 print('@@@@@@@@@@@ Stages : ' + ' '.join(map(str, stages)))
 
-print('stages=', stages)
-bomb
 for i in range(len(stages)):
     prev_seq_length = stages[i-1] if i>0 else 0
     seq_length = stages[i]
@@ -33,6 +31,7 @@ for i in range(len(stages)):
         iterations = min((seq_length + 1) * FLAGS.SCHEDULE_MULT, FLAGS.ITERATIONS_PER_SEQ_LENGTH)
     else:
         iterations = FLAGS.ITERATIONS_PER_SEQ_LENGTH
+    print("Running %d iterations" % (iterations))
     run(iterations, seq_length, seq_length == stages[0] and not (FLAGS.TRAIN_FROM_CKPT),
         charmap,
         inv_charmap,

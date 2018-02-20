@@ -22,7 +22,19 @@ def run(iterations, seq_length, is_first, charmap, inv_charmap, prev_seq_length)
         raise Exception('Please specify path to data directory in single_length_train.py!')
 
     lines, _, _ = model_and_data_serialization.load_dataset(seq_length=seq_length, b_charmap=False, b_inv_charmap=False,
-                                                            n_examples=FLAGS.MAX_N_EXAMPLES)
+    n_examples=FLAGS.MAX_N_EXAMPLES)
+
+    '''
+    print("Lines=", lines)
+    print("Lines Len=", len(lines))
+    print("Lines[1] Len=", lines[1], len(lines[1]))
+    print("Real Inputs Discrete Args BSize=%d, Seqlen=%d" % (BATCH_SIZE, seq_length))   
+    
+    print("charmap=", charmap)
+    print("Len charmap=", len(charmap))
+    print("Inv charmap=", inv_charmap)
+    print("Len inv_charmap=", len(inv_charmap))
+    '''
 
     real_inputs_discrete = tf.placeholder(tf.int32, shape=[BATCH_SIZE, seq_length])
 
@@ -52,7 +64,7 @@ def run(iterations, seq_length, is_first, charmap, inv_charmap, prev_seq_length)
         for iteration in range(iterations):
             start_time = time.time()
 
-            # Train critic
+            # Train critic - Discriminator
             for i in range(CRITIC_ITERS):
                 _data = next(gen)
                 _disc_cost, _, real_scores = session.run(

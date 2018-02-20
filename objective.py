@@ -20,8 +20,7 @@ def get_substrings_from_gt(real_inputs, seq_length, charmap_len):
     train_pred = []
     for i in range(seq_length):
         train_pred.append(
-            tf.concat([tf.zeros([BATCH_SIZE, seq_length - i - 1, charmap_len]), real_inputs[:, :i + 1]],
-                      axis=1))
+            tf.concat([tf.zeros([BATCH_SIZE, seq_length - i - 1, charmap_len]), real_inputs[:, :i + 1]], axis=1))
 
     all_sub_strings = tf.reshape(train_pred, [BATCH_SIZE * seq_length, seq_length, charmap_len])
 
@@ -35,7 +34,9 @@ def get_substrings_from_gt(real_inputs, seq_length, charmap_len):
 
 def define_objective(charmap, real_inputs_discrete, seq_length):
     real_inputs = tf.one_hot(real_inputs_discrete, len(charmap))
+    #Default 'GENERATOR_MODEL' = 'Generator_GRU_CL_VL_TH'
     Generator = get_generator(FLAGS.GENERATOR_MODEL)
+    # Default 'DISCRIMINATOR_MODEL' = 'Discriminator_GRU'
     Discriminator = get_discriminator(FLAGS.DISCRIMINATOR_MODEL)
     train_pred, inference_op = Generator(BATCH_SIZE, len(charmap), seq_len=seq_length, gt=real_inputs)
 
