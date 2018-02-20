@@ -1,8 +1,3 @@
-Enhancements to RNN WGAN for cs224n
-
-
-
----------------
 # Language Generation with Recurrent Generative Adversarial Networks without Pre-training
 
 Code for training and evaluation of the model from ["Language Generation with Recurrent Generative Adversarial Networks without Pre-training"](https://arxiv.org/abs/1706.01399).  
@@ -47,7 +42,7 @@ BATCH_SIZE: Size of batch (defaults to 64)
 CRITIC_ITERS: Number of iterations for the discriminator (defaults to 10)
 GEN_ITERS: Number of iterations for the geneartor (defaults to 50)
 MAX_N_EXAMPLES: Number of samples to load from dataset (defaults to 10000000)
-GENERATOR_MODEL: Name of generator model (currently only 'Generator_GRU_CL_VL_TH' is available)
+GENERATOR_MODEL: Name of generator model (currently 'Generator_GRU_CL_VL_TH' and 'Generator_LSTM_CL_VL_TH' is available)
 DISCRIMINATOR_MODEL: Name of discriminator model (currently only 'Discriminator_GRU' is available)
 PICKLE_PATH: Path to PKL directory to hold cached pickle files (defaults to './pkl')
 ITERATIONS_PER_SEQ_LENGTH: Number of iterations to run per each sequence length in the curriculum training (defaults to 15000)

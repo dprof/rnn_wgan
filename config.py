@@ -9,22 +9,22 @@ flags = tf.app.flags
 
 
 flags.DEFINE_string('LOGS_DIR', './logs/', '')
-#flags.DEFINE_string('DATA_DIR', './data/1-billion-word-language-modeling-benchmark-r13output/', "")
-flags.DEFINE_string('DATA_DIR', './data/small_benchmark/', "")
+flags.DEFINE_string('DATA_DIR', './data/1-billion-word-language-modeling-benchmark-r13output/', "")
+#flags.DEFINE_string('DATA_DIR', './data/small_benchmark/', "")
 flags.DEFINE_string('CKPT_PATH', "./ckpt/", "")
 flags.DEFINE_integer('BATCH_SIZE', 64, '')
 flags.DEFINE_integer('CRITIC_ITERS', 10, '')
 flags.DEFINE_integer('LAMBDA', 10, '')
-#flags.DEFINE_integer('MAX_N_EXAMPLES', 10000000, '')
-flags.DEFINE_integer('MAX_N_EXAMPLES', 1000, '')
+flags.DEFINE_integer('MAX_N_EXAMPLES', 10000000, '')
+#flags.DEFINE_integer('MAX_N_EXAMPLES', 1000, '')
 #Generator Model can be Generator_GRU_CL_VL_TH or Generator_LSTM_CL_VL_TH
 flags.DEFINE_string('GENERATOR_MODEL', 'Generator_LSTM_CL_VL_TH', '')
 #Discrimnator Model can be Disciminator_GRU or Discriminator_LSTM
 flags.DEFINE_string('DISCRIMINATOR_MODEL', 'Discriminator_GRU', '')
 flags.DEFINE_string('PICKLE_PATH', './pkl', '')
 flags.DEFINE_integer('GEN_ITERS', 50, '')
-#flags.DEFINE_integer('ITERATIONS_PER_SEQ_LENGTH', 15000, '')
-flags.DEFINE_integer('ITERATIONS_PER_SEQ_LENGTH', 5, '')
+flags.DEFINE_integer('ITERATIONS_PER_SEQ_LENGTH', 1000, '')
+#flags.DEFINE_integer('ITERATIONS_PER_SEQ_LENGTH', 5, '')
 flags.DEFINE_float('NOISE_STDEV', 10.0, '')
 flags.DEFINE_integer('DISC_STATE_SIZE', 512, '')
 flags.DEFINE_integer('GEN_STATE_SIZE', 512, '')
